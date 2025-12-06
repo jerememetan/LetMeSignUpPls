@@ -1,5 +1,10 @@
 <script>
+import CreditCardModal from '@/components/Molecules/CreditCardModal.vue'
+
 export default {
+    components: {
+        CreditCardModal
+    },
     props: {
         show: {
             type: Boolean,
@@ -9,27 +14,18 @@ export default {
     data() {
         return {
             paywallCount: 1,
-            paywallPositions: []
+            paywallPositions: [],
         }
     },
-    emits: ['close'],
+    emits: ['close','openCreditCard'],
     methods: {
         closePaywall() {
-            let chance = 0;
-            while (chance < 80){
-                prompt("Fill up your Credit card Number:");
-                prompt("Whats the 3 digit at the back?");
-                prompt("What is the expiration date?");
-                chance = this.GenerateNumber(0,100);
-                if ( chance < 80){
-                    alert("Are you trying to trick me? This isn't even a valid credit card!")
-                }
-            }
             this.$emit('close')
             this.paywallCount = 1;
+            this.showCreditCardModal = false;
         },
-        handlePay() {
-            this.closePaywall()
+        handlePaymentSuccess() {
+            this.closePaywall();
         },
         tryToClose() {
             // Instead of closing, duplicate the paywall
@@ -47,23 +43,22 @@ export default {
         <div 
             v-for="index in paywallCount" 
             :key="index" 
-            class="paywall-overlay" 
-            :style="{ zIndex: 9999 + index }"
+            class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3" 
+            :style="{ zIndex: 99 + index }"
         >
             <div 
-                class="paywall-container"
+                class="card bg-dark-blue border-purple p-4 position-absolute paywall-slide-in"
+                style="max-width: 500px; width: 100%;"
                 :style="{ 
-                    transform: `translate(${(index - 1) * 20}px, ${(index - 1) * 20}px)` 
+                    left: `${( GenerateNumber(index-10,index+10) - 1) *20}px`,
+                    top: `${(GenerateNumber(index-10,index+10) - 1) * 20}px`,
+                    transition: 'left 0.5s ease, top 0.5s ease'
                 }"
             >
-                <button class="close-btn" @click="tryToClose">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                    </svg>
-                </button>
+                <button class="btn btn-close btn-close-white position-absolute top-0 end-0 m-3" @click="tryToClose"></button>
                 
-                <div class="paywall-content">
-                    <div class="paywall-icon">
+                <div class="text-center">
+                    <div class="mb-3 paywall-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" fill="var(--theme-purple)" viewBox="0 0 16 16">
                             <path d="M5.5 9.511c.076.954.83 1.697 2.182 1.785V12h.6v-.709c1.4-.098 2.218-.846 2.218-1.932 0-.987-.626-1.496-1.745-1.76l-.473-.112V5.57c.6.068.982.396 1.074.85h1.052c-.076-.919-.864-1.638-2.126-1.716V4h-.6v.719c-1.195.117-2.01.836-2.01 1.853 0 .9.606 1.472 1.613 1.707l.397.098v2.034c-.615-.093-1.022-.43-1.114-.9H5.5zm2.177-2.166c-.59-.137-.91-.416-.91-.836 0-.47.345-.822.915-.925v1.76h-.005zm.692 1.193c.717.166 1.048.435 1.048.91 0 .542-.412.914-1.135.982V8.518l.087.02z"/>
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -71,49 +66,47 @@ export default {
                         </svg>
                     </div>
                     
-                    <h2 class="paywall-title">Premium Feature</h2>
-                    <p class="paywall-subtitle">Oops! You've hit a paywall</p>
+                    <h2 class="text-white fw-bold mb-2 fs-1">Premium Feature</h2>
+                    <p class="text-light-purple mb-4 fs-5">This feature is for members only!</p>
                     
-                    <div class="price-tag">
-                        <span class="currency">$</span>
-                        <span class="amount">99.99</span>
-                        <span class="period">/month</span>
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-4 text-white">
+                        <span class="fs-2 opacity-75">$</span>
+                        <span class="display-3 fw-bold text-gradient">69.99</span>
+                        <span class="fs-5 opacity-75 align-self-end mb-2">/month</span>
                     </div>
                     
-                    <div class="features-list">
-                        <div class="feature-item">
+                    <div class="rounded-3 p-3 mb-4 text-start" style="background: rgba(138, 43, 226, 0.1);">
+                        <div class="d-flex align-items-center gap-3 text-white py-2 border-bottom" style="border-color: var(--theme-purple-rgba-25) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="var(--theme-purple)" viewBox="0 0 16 16">
                                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                             </svg>
                             <span>Password Recovery Access</span>
                         </div>
-                        <div class="feature-item">
+                        <div class="d-flex align-items-center gap-3 text-white py-2 border-bottom" style="border-color: var(--theme-purple-rgba-25) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="var(--theme-purple)" viewBox="0 0 16 16">
                                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                             </svg>
-                            <span>24/7 Not Really Support</span>
+                            <span>24/7 Slient Support</span>
                         </div>
-                        <div class="feature-item">
+                        <div class="d-flex align-items-center gap-3 text-white py-2 border-bottom" style="border-color: var(--theme-purple-rgba-25) !important;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="var(--theme-purple)" viewBox="0 0 16 16">
                                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                             </svg>
-                            <span>Unlimited Frustration</span>
+                            <span>Wasted Money</span>
                         </div>
-                        <div class="feature-item">
+                        <div class="d-flex align-items-center gap-3 text-white py-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="var(--theme-purple)" viewBox="0 0 16 16">
                                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
                             </svg>
-                            <span>Free Disappointment</span>
+                            <span>Free Disappointment & Regret</span>
                         </div>
                     </div>
                     
-                    <button class="pay-btn" @click="handlePay">
+                    <button class="btn btn-lg w-100 text-white fw-bold text-uppercase pay-btn" 
+                            style="background: linear-gradient(90deg, var(--theme-purple), var(--theme-purple-dark)); letter-spacing: 1px;"
+                            @click="$emit('openCreditCard', true)">
                         Subscribe Now
                     </button>
-                    
-                    <p class="paywall-disclaimer">
-                        * By clicking, you agree to give us absolutely nothing
-                    </p>
                 </div>
             </div>
         </div>
@@ -124,35 +117,18 @@ export default {
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.3s ease;
 }
-
-.fade-enter-from, .fade-leave-to {
-    opacity: 0;
+.text-light-purple {
+    color: var(--theme-purple-light);
 }
 
-.paywall-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
+.text-gradient {
+    background: var(--theme-purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.paywall-container {
-    background: linear-gradient(145deg, rgba(15, 15, 35, 0.98), rgba(25, 25, 60, 0.98));
-    border-radius: 24px;
-    max-width: 500px;
-    width: 100%;
-    position: relative;
-    padding: 40px 30px;
-    border: 2px solid var(--theme-purple-rgba-30);
-    box-shadow: 0 20px 60px rgba(138, 43, 226, 0.4);
+.paywall-slide-in {
     animation: slideIn 0.4s ease-out;
 }
 
@@ -167,34 +143,9 @@ export default {
     }
 }
 
-.close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: transparent;
-    border: none;
-    color: var(--theme-purple-light);
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.close-btn:hover {
-    background: var(--theme-purple-rgba-25);
-    color: white;
-    transform: rotate(90deg);
-}
-
-.paywall-content {
-    text-align: center;
-}
 
 .paywall-icon {
-    margin-bottom: 20px;
     animation: bounce 2s infinite;
 }
 
@@ -203,113 +154,8 @@ export default {
     50% { transform: translateY(-10px); }
 }
 
-.paywall-title {
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.paywall-subtitle {
-    color: var(--theme-purple-light);
-    font-size: 1.1rem;
-    margin-bottom: 30px;
-}
-
-.price-tag {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 30px;
-    color: white;
-}
-
-.currency {
-    font-size: 2rem;
-    opacity: 0.7;
-}
-
-.amount {
-    font-size: 4rem;
-    font-weight: bold;
-    background: linear-gradient(90deg, var(--theme-purple), var(--theme-purple-light));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.period {
-    font-size: 1.2rem;
-    opacity: 0.7;
-    align-self: flex-end;
-    margin-bottom: 10px;
-}
-
-.features-list {
-    background: rgba(138, 43, 226, 0.1);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 30px;
-    text-align: left;
-}
-
-.feature-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: white;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--theme-purple-rgba-25);
-}
-
-.feature-item:last-child {
-    border-bottom: none;
-}
-
-.feature-item span {
-    font-size: 1rem;
-}
-
-.pay-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(90deg, var(--theme-purple), var(--theme-purple-dark));
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
 .pay-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 30px var(--theme-purple-rgba-50);
-}
-
-.paywall-disclaimer {
-    margin-top: 15px;
-    color: var(--theme-purple-light);
-    font-size: 0.85rem;
-    opacity: 0.7;
-}
-
-/* Responsive */
-@media (max-width: 576px) {
-    .paywall-container {
-        padding: 30px 20px;
-    }
-    
-    .paywall-title {
-        font-size: 1.5rem;
-    }
-    
-    .amount {
-        font-size: 3rem;
-    }
 }
 </style>

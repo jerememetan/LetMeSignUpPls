@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import FakeLoginButton from '@/components/Atoms/FakeLoginButton.vue'
 import PayWall from '@/components/Organisms/PayWall.vue'
+import CreditCardModal from '@/components/Molecules/CreditCardModal.vue'
 const username = ref('')
 const password = ref('')
 const rememberMe = ref(false)
@@ -12,6 +13,7 @@ const clickCount = ref(0)
 const buttonPosition = ref({ x: 0, y: 0 })
 const loginClickCount = ref(0)
 let loginClickTimer = null
+let showCreditCardModal = ref(false)
 
 const handleTyping = () => {
   isTyping.value = true
@@ -20,7 +22,9 @@ const handleTyping = () => {
     isTyping.value = false
   }, 100)
 }
-
+const handlePay = () => {
+    showCreditCardModal.value = true;
+    }
 const addClick = () => {
     clickCount.value++;
 }
@@ -75,6 +79,11 @@ const handleLogin = () => {
 
 <template>
 <div class="row g-0">
+    <CreditCardModal 
+      :show="showCreditCardModal" 
+      @close="showCreditCardModal = false"
+      @success="handlePaymentSuccess"
+  />
     <!-- login portion -->
   <div class="login-container min-vh-100 d-flex align-items-center justify-content-center p-3 col-12 col-lg-7">
     <!-- Centered Card with Gradient Border -->
@@ -127,7 +136,7 @@ const handleLogin = () => {
         
         <div class="text-center mt-4">
           <a href="#" class="text-light-purple text-decoration-none" @click.prevent="showPayWall = true">Forgot password?</a>
-          <PayWall :show="showPayWall" @close="showPayWall = false"></PayWall>
+          <PayWall :show="showPayWall" @close="showPayWall = false" @openCreditCard="handlePay"></PayWall>
         </div>
       </div>
     </div>
