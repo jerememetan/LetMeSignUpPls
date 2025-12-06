@@ -6,6 +6,8 @@ import AddressCoordinates from '@/components/Atoms/AddressCordinates.vue'
 import MovingUserName from '@/components/Atoms/MovingUserName.vue'
 import Minigame from '@/components/Organisms/Minigame.vue'
 import animatedImage from '@/components/Atoms/animatedImage.vue'
+import PasswordWithRequirements from '@/components/Atoms/PasswordWithRequirements.vue'
+import BurningPasswordConfirm from '@/components/Atoms/BurningPasswordConfirm.vue'
 
 const email = ref('')
 const phoneNumber = ref('')
@@ -178,73 +180,65 @@ const startFire = () => {
             <div v-if="unlockedFields.username" >
               <MovingUserName v-model="username" />
             </div>
-            <div v-else :class="{ 'locked-field': !unlockedFields.username }" >
-              <label class="form-label text-light">Username</label>
-
-            </div>
           </div>
           
           <!-- Password Field -->
           <div class="mb-3 locked-field-container">
-            <label for="password" class="form-label text-light">
-              Password
-              <span v-if="!unlockedFields.password" class="unlock-badge">🔒 {{ PASSWORD_COST }} coins</span>
-            </label>
-            <div class="field-wrapper">
-              <input 
-                type="password" 
-                class="form-control form-control-lg bg-dark-blue border-purple text-white" 
-                :class="{ 'locked-field': !unlockedFields.password }"
-                id="password" 
-                v-model="password"
-                placeholder="Create a password"
-                :disabled="!unlockedFields.password"
-                required
-              >
-              <button 
-                v-if="!unlockedFields.password"
-                type="button"
-                class="unlock-btn"
-                :class="{ 'can-unlock': canUnlockPassword }"
-                @click="unlockPassword"
-                :disabled="!canUnlockPassword"
-              >
-                {{ canUnlockPassword ? '🔓 Unlock' : '🔒 Locked' }}
-              </button>
+            <div v-if="!unlockedFields.password" class="locked-address-overlay">
+              <div class="unlock-prompt">
+                <h4>🔒 Password Field Locked</h4>
+                <p>Cost: {{ PASSWORD_COST }} coins</p>
+                <button 
+                  type="button"
+                  class="unlock-btn-large"
+                  :class="{ 'can-unlock': canUnlockPassword }"
+                  @click="unlockPassword"
+                  :disabled="!canUnlockPassword"
+                >
+                  {{ canUnlockPassword ? '🔓 Unlock for ' + PASSWORD_COST + ' coins' : '🔒 Need ' + PASSWORD_COST + ' coins' }}
+                </button>
+              </div>
+            </div>
+            <div v-if="unlockedFields.password">
+              <label for="password" class="form-label text-light">Password</label>
+              <PasswordWithRequirements v-model="password" :username="username" :disabled="!unlockedFields.password"></PasswordWithRequirements>
+              
+            </div>
+            <div v-else :class="{ 'locked-field': !unlockedFields.password }">
+              <label v-if="unlockedFields.password" class="form-label text-light">Password</label>
             </div>
           </div>
           
           <!-- Confirm Password Field -->
           <div class="mb-3 locked-field-container">
-            <label for="confirmPassword" class="form-label text-light">
-              Confirm Password
-              <span v-if="!unlockedFields.confirmPassword" class="unlock-badge">🔒 {{ CONFIRM_PASSWORD_COST }} coins</span>
-            </label>
-            <div class="field-wrapper">
-              <input 
-                type="password" 
-                class="form-control form-control-lg bg-dark-blue border-purple text-white" 
-                :class="{ 'locked-field': !unlockedFields.confirmPassword }"
-                id="confirmPassword" 
-                v-model="confirmPassword"
-                placeholder="Confirm your password"
+            <div v-if="!unlockedFields.confirmPassword" class="locked-address-overlay">
+              <div class="unlock-prompt">
+                <h4>🔒 Confirm Password Field Locked</h4>
+                <p>Cost: {{ CONFIRM_PASSWORD_COST }} coins</p>
+                <button 
+                  type="button"
+                  class="unlock-btn-large"
+                  :class="{ 'can-unlock': canUnlockConfirmPassword }"
+                  @click="unlockConfirmPassword"
+                  :disabled="!canUnlockConfirmPassword"
+                >
+                  {{ canUnlockConfirmPassword ? '🔓 Unlock for ' + CONFIRM_PASSWORD_COST + ' coins' : '🔒 Need ' + CONFIRM_PASSWORD_COST + ' coins' }}
+                </button>
+              </div>
+            </div>
+            <div v-if="unlockedFields.confirmPassword">
+              <label for="confirmPassword" class="form-label text-light">Confirm Password</label>
+              <BurningPasswordConfirm 
+                v-model="confirmPassword" 
+                :originalPassword="password"
                 :disabled="!unlockedFields.confirmPassword"
-                required
-              >
-              <button 
-                v-if="!unlockedFields.confirmPassword"
-                type="button"
-                class="unlock-btn"
-                :class="{ 'can-unlock': canUnlockConfirmPassword }"
-                @click="unlockConfirmPassword"
-                :disabled="!canUnlockConfirmPassword"
-              >
-                {{ canUnlockConfirmPassword ? '🔓 Unlock' : '🔒 Locked' }}
-              </button>
+              />
+            </div>
+            <div v-else :class="{ 'locked-field': !unlockedFields.confirmPassword }">
+              <label class="form-label text-light">Confirm Password</label>
             </div>
           </div>
           <!-- <animatedImage src="../../src/assets/Explosion_Animated.png" :frameWidth="550" :frameHeight="550" :frames="10" :width="100" :height="100" ></animatedImage> -->
-          <animatedImage src="../../src/assets/fire_animated.png" :frameWidth="400" :frameHeight="400" :frames="6" :width="100" :height="100" ></animatedImage>
           <!-- Terms and Conditions -->
           <div class="form-check mb-4" @click="startFire">
             <input 
@@ -312,8 +306,6 @@ const startFire = () => {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   background: radial-gradient(circle, var(--theme-purple-rgba-10) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
@@ -327,7 +319,7 @@ const startFire = () => {
 }
 
 .register-card {
-  width: 80%;
+
   max-width: 900px;
   background: linear-gradient(145deg, var(--theme-purple-rgba-30), var(--theme-blue-dark));
   padding: 3px;

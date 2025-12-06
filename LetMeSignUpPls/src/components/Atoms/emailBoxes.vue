@@ -29,7 +29,7 @@ const updateEmail = () => {
 
 // Start shuffling on mount
 onMounted(() => {
-  shuffleInterval = setInterval(shuffleEmailBoxes, 2500)
+  shuffleInterval = setInterval(shuffleEmailBoxes, 8000)
   
 })
 

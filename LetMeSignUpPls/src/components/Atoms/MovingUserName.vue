@@ -9,7 +9,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const inputValue = ref(props.modelValue || '')
 const position = ref({ x: 50, y: 50 })
-const velocity = ref({ x: 10, y: 10 })
+const velocity = ref({ x: 7.5, y: 10 })
 const isDisabled = ref(false)
 const containerWidth = ref(800)
 const containerHeight = ref(400)
