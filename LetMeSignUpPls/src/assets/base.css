@@ -1,0 +1,119 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #f8f8f8;
+  --vt-c-white-mute: #f2f2f2;
+
+  --vt-c-black: #181818;
+  --vt-c-black-soft: #222222;
+  --vt-c-black-mute: #282828;
+
+  --vt-c-indigo: #2c3e50;
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: var(--vt-c-indigo);
+  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-dark-1: var(--vt-c-white);
+  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+}
+
+/* custom theme colors - dark blue/purple */
+:root {
+  --theme-purple: #8a2be2;
+  --theme-purple-dark: #4b0082;
+  --theme-purple-light: #b19cd9;
+  --theme-purple-rgba-10: rgba(138, 43, 226, 0.1);
+  --theme-purple-rgba-15: rgba(138, 43, 226, 0.15);
+  --theme-purple-rgba-25: rgba(138, 43, 226, 0.25);
+  --theme-purple-rgba-30: rgba(138, 43, 226, 0.3);
+  --theme-purple-rgba-50: rgba(138, 43, 226, 0.5);
+  
+  --theme-blue-dark: rgba(25, 25, 112, 0.3);
+  --theme-dark-bg: rgba(15, 15, 35, 0.95);
+  --theme-dark-input: rgba(25, 25, 60, 0.6);
+  
+  --gradient-bg-1: #0f0c29;
+  --gradient-bg-2: #302b63;
+  --gradient-bg-3: #24243e;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light-1);
+
+  --section-gap: 160px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--vt-c-black);
+    --color-background-soft: var(--vt-c-black-soft);
+    --color-background-mute: var(--vt-c-black-mute);
+
+    --color-border: var(--vt-c-divider-dark-2);
+    --color-border-hover: var(--vt-c-divider-dark-1);
+
+    --color-heading: var(--vt-c-text-dark-1);
+    --color-text: var(--vt-c-text-dark-2);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bg-dark-blue {
+  background-color: var(--theme-dark-input) !important;
+}
+
+.border-purple {
+  border: 2px solid var(--theme-purple-rgba-50) !important;
+}
+.border-purple:focus {
+  border-color: var(--theme-purple) !important;
+  box-shadow: 0 0 0 0.2rem var(--theme-purple-rgba-25) !important;
+  outline: none;
+}
