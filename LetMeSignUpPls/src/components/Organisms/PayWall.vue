@@ -10,6 +10,7 @@ export default {
             type: Boolean,
             default: false
         }
+        
     },
     data() {
         return {
@@ -17,15 +18,12 @@ export default {
             paywallPositions: [],
         }
     },
-    emits: ['close','openCreditCard'],
+    emits: ['close','openCreditCard','paymentSuccess'],
     methods: {
         closePaywall() {
             this.$emit('close')
             this.paywallCount = 1;
             this.showCreditCardModal = false;
-        },
-        handlePaymentSuccess() {
-            this.closePaywall();
         },
         tryToClose() {
             // Instead of closing, duplicate the paywall
@@ -34,6 +32,7 @@ export default {
         GenerateNumber(min,max) {
             return Math.floor(Math.random() * (max - min)) + min;
         },
+
     }
 }
 </script>

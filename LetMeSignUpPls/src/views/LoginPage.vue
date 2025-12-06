@@ -24,11 +24,21 @@ const handleTyping = () => {
 }
 const handlePay = () => {
     showCreditCardModal.value = true;
-    }
+}
+
 const addClick = () => {
     clickCount.value++;
 }
 
+const paywallRef = ref(null);
+
+const handlePaymentSuccess = () => {
+    if (paywallRef.value) {
+        paywallRef.value.closePaywall();
+    }
+    showPayWall.value = false;
+    showCreditCardModal.value = false;
+}
 const moveButton = (event) => {
   // Start timer on first click
   if (loginClickCount.value === 0) {
@@ -79,6 +89,7 @@ const handleLogin = () => {
 
 <template>
 <div class="row g-0">
+    
     <CreditCardModal 
       :show="showCreditCardModal" 
       @close="showCreditCardModal = false"
@@ -136,7 +147,7 @@ const handleLogin = () => {
         
         <div class="text-center mt-4">
           <a href="#" class="text-light-purple text-decoration-none" @click.prevent="showPayWall = true">Forgot password?</a>
-          <PayWall :show="showPayWall" @close="showPayWall = false" @openCreditCard="handlePay"></PayWall>
+          <PayWall ref="paywallRef" :show="showPayWall" @close="showPayWall = false" @openCreditCard="handlePay"></PayWall>
         </div>
       </div>
     </div>

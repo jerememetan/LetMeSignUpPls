@@ -138,7 +138,7 @@ const startFire = () => {
           
           <!-- Address Field -->
           <div class="mb-3 locked-field-container">
-            <div v-if="!unlockedFields.address" class="locked-address-overlay">
+            <div v-if="!unlockedFields.address" class="locked-address-overlay d-flex">
               <div class="unlock-prompt">
                 <h4>🔒 Address Field Locked</h4>
                 <p>Cost: {{ ADDRESS_COST }} coins</p>
@@ -153,7 +153,7 @@ const startFire = () => {
                 </button>
               </div>
             </div>
-            <div :class="{ 'locked-field': !unlockedFields.address }">
+            <div :class="{ 'locked-field': !unlockedFields.address }" v-if="unlockedFields.address">
               <AddressCoordinates v-model="address" />
             </div>
           </div>
@@ -175,13 +175,12 @@ const startFire = () => {
                 </button>
               </div>
             </div>
-            <div v-if="unlockedFields.username">
+            <div v-if="unlockedFields.username" >
               <MovingUserName v-model="username" />
             </div>
-            <div v-else :class="{ 'locked-field': !unlockedFields.username }">
+            <div v-else :class="{ 'locked-field': !unlockedFields.username }" >
               <label class="form-label text-light">Username</label>
-              <div class="bounce-arena-placeholder">
-              </div>
+
             </div>
           </div>
           
@@ -288,7 +287,7 @@ const startFire = () => {
     </div>
     
     <!-- Minigame with Coin Display -->
-    <div class="minigame-section">
+    <div class="minigame-section mx-2">
       <div class="coin-display">
         <h3>💰 Your Coins: {{ totalCoins }}</h3>
         <p class="text-light-purple">Play the game to earn coins and unlock fields!</p>
@@ -300,12 +299,10 @@ const startFire = () => {
 </template>
 
 <style scoped>
-/* Base Styles */
 .register-container {
   background-color: var(--theme-blue-dark);
   position: relative;
   min-height: 100vh;
-  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -322,22 +319,13 @@ const startFire = () => {
   z-index: 0;
 }
 
-/* Disabled for performance */
-/* @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-} */
-
 .register-wrapper {
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  contain: layout style;
+  padding: 20px 0;
 }
 
-/* Register Card */
 .register-card {
   width: 80%;
   max-width: 900px;
@@ -345,7 +333,6 @@ const startFire = () => {
   padding: 3px;
   border-radius: 20px;
   box-shadow: 0 8px 32px var(--theme-purple-rgba-30);
-  position: relative;
 }
 
 .register-card .card-body {
@@ -353,30 +340,15 @@ const startFire = () => {
   border-radius: 18px;
 }
 
-/* Form Styles */
-
-
-/* Placeholder text color */
 .form-control::placeholder {
   color: var(--theme-purple-light);
   opacity: 0.6;
 }
 
-
-
-.text-light-purple {
-  color: var(--theme-purple-light);
-}
-
-/* Button */
 .btn-purple {
-  background: linear-gradient(90deg, var(--theme-purple), var(--theme-purple-dark));
-  border: none;
-  color: white;
-  font-weight: bold;
+  background: var(--gradient-purple);
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.3s;
 }
 
 .btn-purple:hover {
@@ -384,88 +356,45 @@ const startFire = () => {
   box-shadow: 0 10px 30px var(--theme-purple-rgba-50);
 }
 
-/* Form Check */
-.form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem var(--theme-purple-rgba-25);
-}
-
-.form-check-input:checked {
-  background-color: var(--theme-purple);
-  border-color: var(--theme-purple);
-}
-
-/* Locked Field Styles */
-.locked-field-container {
-  position: relative;
-}
-
 .locked-address-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
+  position: relative;
+  background: var(--theme-dark-overlay);
   border: 2px solid var(--theme-purple);
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10;
   backdrop-filter: blur(5px);
-}
-
-.unlock-prompt {
+  padding: 2% 4%;
+  justify-content: center;
   text-align: center;
-  padding: 30px;
-}
-
-.unlock-prompt h4 {
-  color: gold;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-.unlock-prompt p {
-  color: var(--theme-purple-light);
-  font-size: 1.2rem;
-  margin-bottom: 20px;
 }
 
 .unlock-btn-large {
   padding: 15px 30px;
   font-size: 1.1rem;
-  border: 2px solid #666;
+  border: 2px solid var(--theme-purple-rgba-30);
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #999;
-  font-weight: bold;
+  background: var(--theme-dark-card-bg);
+  color: var(--theme-purple-light);
   cursor: not-allowed;
-  transition: all 0.3s;
 }
 
 .unlock-btn-large.can-unlock {
-  background: linear-gradient(90deg, gold, orange);
+  background: var(--gradient-gold);
   color: black;
-  border-color: gold;
+  border-color: var(--theme-gold);
   cursor: pointer;
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
 .unlock-btn-large.can-unlock:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+  box-shadow: 0 0 30px var(--theme-gold-rgba-80);
 }
 
 .unlock-badge {
   margin-left: 10px;
   font-size: 0.85rem;
-  color: gold;
-  font-weight: bold;
-}
-
-.field-wrapper {
-  position: relative;
+  color: var(--theme-gold);
 }
 
 .locked-field {
@@ -475,100 +404,52 @@ const startFire = () => {
 }
 
 .unlock-btn {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
+  position:relative;
   padding: 8px 16px;
-  border: 2px solid #666;
+  border: 2px solid var(--theme-purple-rgba-30);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #999;
-  font-weight: bold;
+  background: var(--theme-dark-card-bg);
+  color: var(--theme-purple-light);
   cursor: not-allowed;
-  transition: all 0.3s;
   z-index: 2;
 }
 
 .unlock-btn.can-unlock {
-  background: linear-gradient(90deg, gold, orange);
+  background: var(--gradient-gold);
   color: black;
-  border-color: gold;
+  border-color: var(--theme-gold);
   cursor: pointer;
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
 .unlock-btn.can-unlock:hover {
-  transform: translateY(-50%) scale(1.05);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  transform: translateY(-20%) scale(1.05);
+  box-shadow: 0 0 20px var(--theme-gold-rgba-80);
 }
 
 @keyframes glow-pulse {
   0%, 100% { 
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 10px var(--theme-gold-rgba-50);
   }
   50% { 
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+    box-shadow: 0 0 25px var(--theme-gold-rgba-90);
   }
-}
-
-/* Bounce Arena Placeholder */
-.bounce-arena-placeholder {
-  width: 100%;
-  max-width: 200px;
-  height: 200px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(26, 26, 46, 0.6));
-  border: 3px dashed var(--theme-purple-rgba-50);
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.bounce-arena-placeholder p {
-  margin: 0;
-  color: var(--theme-purple-light);
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.bounce-arena-placeholder .small-text {
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
-
-/* Minigame Section */
-.minigame-section {
-  width: 100%;
-  max-width: 500px;
-  margin-top: 20px;
 }
 
 .coin-display {
-  text-align: center;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 15px;
+  background: var(--theme-dark-card-bg);
   border-radius: 10px;
-  margin-bottom: 15px;
   border: 2px solid var(--theme-purple);
+  padding: 3%;
+  margin-bottom: 2%;
 }
 
 .coin-display h3 {
-  margin: 0;
-  color: gold;
+  color: var(--theme-gold);
   font-size: 1.8rem;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  text-shadow: 0 0 10px var(--theme-gold-rgba-50);
 }
 
-.coin-display p {
-  margin: 5px 0 0 0;
-  font-size: 0.9rem;
-}
-
-/* Responsive */
 @media (max-width: 576px) {
   .register-card {
     max-width: 100%;
@@ -576,14 +457,6 @@ const startFire = () => {
   
   .register-card .card-body {
     padding: 2rem !important;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-  }
-  
-  .minigame-section {
-    max-width: 100%;
   }
   
   .unlock-btn {

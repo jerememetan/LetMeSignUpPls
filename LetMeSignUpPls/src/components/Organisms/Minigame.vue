@@ -231,23 +231,23 @@ export default {
 </script>
 
 <template>
-    <div class="game-wrapper">
-        <div class="game-header">
-            <div class="balance">💰 Coins: {{ myBalance }}</div>
-            <div v-if="isPlaying" class="difficulty">⚡ Level: {{ difficulty }}</div>
-            <button v-if="!isPlaying" @click="startGame" class="btn btn-success">Start Game</button>
-            <button v-else @click="stopGame" class="btn btn-danger">Stop Game</button>
+    <div class="game-wrapper d-flex flex-column align-items-center gap-3 p-4 rounded-3 border border-2">
+        <div class="game-header d-flex justify-content-between align-items-center w-100 gap-3" style="max-width: 400px;">
+            <div class="balance fs-4 fw-bold">💰 Coins: {{ myBalance }}</div>
+            <div v-if="isPlaying" class="difficulty fs-5 fw-bold text-light-purple pulse-glow">⚡ Level: {{ difficulty }}</div>
+            <button v-if="!isPlaying" @click="startGame" class="btn btn-success fw-bold">Start Game</button>
+            <button v-else @click="stopGame" class="btn btn-danger fw-bold">Stop Game</button>
         </div>
         
         <div 
-            class="game-container" 
+            class="game-container position-relative rounded-3 border border-3"
             :style="{ width: gameWidth + 'px', height: gameHeight + 'px' }"
             @mousemove="movePlayer"
             @click="shoot"
         >
             <!-- Player -->
             <div 
-                class="player" 
+                class="player position-absolute d-flex align-items-center justify-content-center fs-1" 
                 :style="{ 
                     left: playerX + 'px', 
                     bottom: '20px',
@@ -262,7 +262,7 @@ export default {
             <div 
                 v-for="(bullet, index) in bullets" 
                 :key="'bullet-' + index"
-                class="bullet"
+                class="bullet position-absolute rounded-2"
                 :style="{ 
                     left: bullet.x + 'px', 
                     top: bullet.y + 'px',
@@ -275,12 +275,13 @@ export default {
             <div 
                 v-for="(enemy, index) in enemies" 
                 :key="'enemy-' + index"
-                class="enemy"
+                class="enemy position-absolute d-flex align-items-center justify-content-center enemy-float"
                 :style="{ 
                     left: enemy.x + 'px', 
                     top: enemy.y + 'px',
                     width: enemy.width + 'px',
-                    height: enemy.height + 'px'
+                    height: enemy.height + 'px',
+                    fontSize: '1.5rem'
                 }"
             >
                 👾
@@ -290,7 +291,7 @@ export default {
             <div 
                 v-for="(bullet, index) in enemyBullets" 
                 :key="'enemy-bullet-' + index"
-                class="enemy-bullet"
+                class="enemy-bullet position-absolute rounded-2"
                 :style="{ 
                     left: bullet.x + 'px', 
                     top: bullet.y + 'px',
@@ -300,53 +301,36 @@ export default {
             ></div>
             
             <!-- Game Over Message -->
-            <div v-if="gameOver" class="game-over">
-                <h2>💀 GAME OVER 💀</h2>
-                <p>Final Score: {{ myBalance }} coins</p>
-                <button @click="startGame" class="btn btn-primary">Try Again</button>
+            <div v-if="gameOver" class="game-over position-absolute top-50 start-50 translate-middle text-center text-white rounded-3 border border-3 p-4 pulse-red" style="z-index: 10;">
+                <h2 class="mb-3 fs-1">💀 GAME OVER 💀</h2>
+                <p class="text-light-purple fs-5 mb-4">Final Score: {{ myBalance }} coins</p>
+                <button @click="startGame" class="btn btn-primary fw-bold">Try Again</button>
             </div>
             
             <!-- Instructions -->
-            <div v-if="!isPlaying" class="instructions">
-                <p>Click to shoot!</p>
-                <p>Press SPACE or click to fire</p>
-                <p>Move mouse to control</p>
+            <div v-if="!isPlaying" class="instructions position-absolute top-50 start-50 translate-middle text-center text-white rounded-3 border border-2 p-4">
+                <p class="text-light-purple mb-2">Click to shoot!</p>
+                <p class="text-light-purple mb-2">Press SPACE or click to fire</p>
+                <p class="text-light-purple mb-0">Move mouse to control</p>
             </div>
         </div>
     </div>
 </template>
-
 <style scoped>
 .game-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 15px;
-    border: 2px solid var(--theme-purple);
-}
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-    gap: 20px;
+    background: var(--theme-dark-card-bg);
+    border-color: var(--theme-purple) !important;
 }
 
 .balance {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: gold;
+    color: var(--theme-gold);
 }
 
 .difficulty {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--theme-purple-light);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
 }
 
@@ -356,82 +340,52 @@ export default {
 }
 
 .game-container {
-    position: relative;
-    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 100%);
-    border: 3px solid var(--theme-purple);
-    border-radius: 10px;
+    background: var(--gradient-game-bg);
+    border-color: var(--theme-purple) !important;
     cursor: crosshair;
     overflow: hidden;
 }
 
 .player {
-    position: absolute;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: left 0.05s linear;
 }
 
 .bullet {
-    position: absolute;
-    background: linear-gradient(180deg, #ffff00, #ff6600);
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+    background: var(--gradient-bullet);
+    box-shadow: 0 0 10px var(--theme-yellow-rgba-80);
 }
 
 .enemy-bullet {
-    position: absolute;
-    background: linear-gradient(180deg, #ff0000, #8B0000);
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    background: var(--gradient-enemy-bullet);
+    box-shadow: 0 0 10px var(--theme-red-rgba-80);
 }
 
 .game-over {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    background: rgba(0, 0, 0, 0.9);
-    padding: 30px 40px;
-    border-radius: 15px;
-    border: 3px solid #ff0000;
-    z-index: 10;
-    animation: pulse-red 2s ease-in-out infinite;
+    background: var(--theme-dark-overlay);
+    border-color: var(--theme-red) !important;
 }
 
 .game-over h2 {
-    margin: 0 0 15px 0;
-    color: #ff0000;
-    font-size: 2rem;
-    text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    color: var(--theme-red);
+    text-shadow: 0 0 10px var(--theme-red-rgba-80);
 }
 
-.game-over p {
-    margin: 10px 0 20px 0;
-    color: var(--theme-purple-light);
-    font-size: 1.2rem;
+.pulse-red {
+    animation: pulse-red 2s ease-in-out infinite;
 }
 
 @keyframes pulse-red {
     0%, 100% { 
-        box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-        border-color: #ff0000;
+        box-shadow: 0 0 20px var(--theme-red-rgba-50);
+        border-color: var(--theme-red) !important;
     }
     50% { 
-        box-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
-        border-color: #ff4444;
+        box-shadow: 0 0 40px var(--theme-red-rgba-80);
+        border-color: var(--theme-red) !important;
     }
 }
 
-.enemy {
-    position: absolute;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.enemy-float {
     animation: enemyFloat 1s ease-in-out infinite;
 }
 
@@ -441,44 +395,20 @@ export default {
 }
 
 .instructions {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    border: 2px solid var(--theme-purple-light);
-}
-
-.instructions p {
-    margin: 5px 0;
-    color: var(--theme-purple-light);
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
+    background: var(--theme-dark-card-bg);
+    border-color: var(--theme-purple-light) !important;
 }
 
 .btn-success {
-    background: linear-gradient(90deg, #28a745, #20c997);
-    color: white;
+    background: var(--gradient-success);
 }
 
 .btn-danger {
-    background: linear-gradient(90deg, #dc3545, #c82333);
-    color: white;
+    background: var(--gradient-danger);
 }
 
 .btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+    box-shadow: 0 4px 15px var(--theme-purple-rgba-50);
 }
 </style>
