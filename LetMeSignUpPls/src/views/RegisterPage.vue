@@ -166,179 +166,183 @@ const verifyCaptcha = async () => {
 </script>
 
 <template>
-  <div class="register-container">
-    <div class="register-wrapper d-flex justify-content-center p-3">
-      <div class="register-card">
-      <div class="card-body p-4 p-md-5">
-        <div class="text-center mb-4">
-          <h2 class="text-white fw-bold mb-2">Create Your Account</h2>
-          <p class="text-light-purple mb-0">Join us today</p>
-        </div>
-        
-        <form @submit.prevent="handleSubmit">
-          <!-- Email Field - 10 Boxes -->
-          <div class="mb-3">
-            <EmailBoxes v-model="email" />
-          </div>
-          
-          <!-- Phone Number Field -->
-          <div class="mb-3">
-            <PhoneNumberSlider v-model="phoneNumber" />
-          </div>
-          
-          <!-- Address Field -->
-          <div class="mb-3 locked-field-container">
-            <div v-if="!unlockedFields.address" class="locked-address-overlay d-flex">
-              <div class="unlock-prompt">
-                <h4>🔒 Address Field Locked</h4>
-                <p>Cost: {{ ADDRESS_COST }} coins</p>
-                <button 
-                  type="button"
-                  class="unlock-btn-large"
-                  :class="{ 'can-unlock': canUnlockAddress }"
-                  @click="unlockAddress"
-                  :disabled="!canUnlockAddress"
-                >
-                  {{ canUnlockAddress ? '🔓 Unlock for ' + ADDRESS_COST + ' coins' : '🔒 Need ' + ADDRESS_COST + ' coins' }}
-                </button>
+  <div class="register-container " >
+    <div class="register-wrapper p-3 row ">
+      <div class="col-12 col-md-6 col-xl-5">
+          <div class="register-card" >
+              <div class="card-body p-3">
+                <div class="text-center mb-4">
+                  <h2 class="text-white fw-bold mb-2">Create Your Account</h2>
+                  <p class="text-light-purple mb-0">Join us today</p>
+                </div>
+          <form @submit.prevent="handleSubmit">
+            <!-- Email Field - 10 Boxes -->
+            <div class="mb-3">
+              <EmailBoxes v-model="email" />
+            </div>
+            
+            <!-- Phone Number Field -->
+            <div class="mb-3">
+              <PhoneNumberSlider v-model="phoneNumber" />
+            </div>
+            
+            <!-- Address Field -->
+            <div class="mb-3 locked-field-container">
+              <div v-if="!unlockedFields.address" class="locked-address-overlay d-flex">
+                <div class="unlock-prompt">
+                  <h4>🔒 Address Field Locked</h4>
+                  <p>Cost: {{ ADDRESS_COST }} coins</p>
+                  <button 
+                    type="button"
+                    class="unlock-btn-large"
+                    :class="{ 'can-unlock': canUnlockAddress }"
+                    @click="unlockAddress"
+                    :disabled="!canUnlockAddress"
+                  >
+                    {{ canUnlockAddress ? '🔓 Unlock for ' + ADDRESS_COST + ' coins' : '🔒 Need ' + ADDRESS_COST + ' coins' }}
+                  </button>
+                </div>
+              </div>
+              <div :class="{ 'locked-field': !unlockedFields.address }" v-if="unlockedFields.address">
+                <AddressCoordinates v-model="address" />
               </div>
             </div>
-            <div :class="{ 'locked-field': !unlockedFields.address }" v-if="unlockedFields.address">
-              <AddressCoordinates v-model="address" />
-            </div>
-          </div>
-          
-          <!-- Username Field -->
-          <div class="mb-3 locked-field-container">
-            <div v-if="!unlockedFields.username" class="locked-address-overlay">
-              <div class="unlock-prompt">
-                <h4>🔒 Username Field Locked</h4>
-                <p>Cost: {{ USERNAME_COST }} coins</p>
-                <button 
-                  type="button"
-                  class="unlock-btn-large"
-                  :class="{ 'can-unlock': canUnlockUsername }"
-                  @click="unlockUsername"
-                  :disabled="!canUnlockUsername"
-                >
-                  {{ canUnlockUsername ? '🔓 Unlock for ' + USERNAME_COST + ' coins' : '🔒 Need ' + USERNAME_COST + ' coins' }}
-                </button>
+            
+            <!-- Username Field -->
+            <div class="mb-3 locked-field-container">
+              <div v-if="!unlockedFields.username" class="locked-address-overlay">
+                <div class="unlock-prompt">
+                  <h4>🔒 Username Field Locked</h4>
+                  <p>Cost: {{ USERNAME_COST }} coins</p>
+                  <button 
+                    type="button"
+                    class="unlock-btn-large"
+                    :class="{ 'can-unlock': canUnlockUsername }"
+                    @click="unlockUsername"
+                    :disabled="!canUnlockUsername"
+                  >
+                    {{ canUnlockUsername ? '🔓 Unlock for ' + USERNAME_COST + ' coins' : '🔒 Need ' + USERNAME_COST + ' coins' }}
+                  </button>
+                </div>
+              </div>
+              <div v-if="unlockedFields.username" >
+                <MovingUserName v-model="username" />
               </div>
             </div>
-            <div v-if="unlockedFields.username" >
-              <MovingUserName v-model="username" />
-            </div>
-          </div>
-          
-          <!-- Password Field -->
-          <div class="mb-3 locked-field-container">
-            <div v-if="!unlockedFields.password" class="locked-address-overlay">
-              <div class="unlock-prompt">
-                <h4>🔒 Password Field Locked</h4>
-                <p>Cost: {{ PASSWORD_COST }} coins</p>
-                <button 
-                  type="button"
-                  class="unlock-btn-large"
-                  :class="{ 'can-unlock': canUnlockPassword }"
-                  @click="unlockPassword"
-                  :disabled="!canUnlockPassword"
-                >
-                  {{ canUnlockPassword ? '🔓 Unlock for ' + PASSWORD_COST + ' coins' : '🔒 Need ' + PASSWORD_COST + ' coins' }}
-                </button>
+            
+            <!-- Password Field -->
+            <div class="mb-3 locked-field-container">
+              <div v-if="!unlockedFields.password" class="locked-address-overlay">
+                <div class="unlock-prompt">
+                  <h4>🔒 Password Field Locked</h4>
+                  <p>Cost: {{ PASSWORD_COST }} coins</p>
+                  <button 
+                    type="button"
+                    class="unlock-btn-large"
+                    :class="{ 'can-unlock': canUnlockPassword }"
+                    @click="unlockPassword"
+                    :disabled="!canUnlockPassword"
+                  >
+                    {{ canUnlockPassword ? '🔓 Unlock for ' + PASSWORD_COST + ' coins' : '🔒 Need ' + PASSWORD_COST + ' coins' }}
+                  </button>
+                </div>
+              </div>
+              <div v-if="unlockedFields.password">
+                <label for="password" class="form-label text-light">Password</label>
+                <PasswordWithRequirements v-model="password" :username="username" :disabled="!unlockedFields.password"></PasswordWithRequirements>
+                
+              </div>
+              <div v-else :class="{ 'locked-field': !unlockedFields.password }">
+                <label v-if="unlockedFields.password" class="form-label text-light">Password</label>
               </div>
             </div>
-            <div v-if="unlockedFields.password">
-              <label for="password" class="form-label text-light">Password</label>
-              <PasswordWithRequirements v-model="password" :username="username" :disabled="!unlockedFields.password"></PasswordWithRequirements>
-              
-            </div>
-            <div v-else :class="{ 'locked-field': !unlockedFields.password }">
-              <label v-if="unlockedFields.password" class="form-label text-light">Password</label>
-            </div>
-          </div>
-          
-          <!-- Confirm Password Field -->
-          <div class="mb-3 locked-field-container">
-            <div v-if="!unlockedFields.confirmPassword" class="locked-address-overlay">
-              <div class="unlock-prompt">
-                <h4>🔒 Confirm Password Field Locked</h4>
-                <p>Cost: {{ CONFIRM_PASSWORD_COST }} coins</p>
-                <button 
-                  type="button"
-                  class="unlock-btn-large"
-                  :class="{ 'can-unlock': canUnlockConfirmPassword }"
-                  @click="unlockConfirmPassword"
-                  :disabled="!canUnlockConfirmPassword"
-                >
-                  {{ canUnlockConfirmPassword ? '🔓 Unlock for ' + CONFIRM_PASSWORD_COST + ' coins' : '🔒 Need ' + CONFIRM_PASSWORD_COST + ' coins' }}
-                </button>
+            
+            <!-- Confirm Password Field -->
+            <div class="mb-3 locked-field-container">
+              <div v-if="!unlockedFields.confirmPassword" class="locked-address-overlay">
+                <div class="unlock-prompt">
+                  <h4>🔒 Confirm Password Field Locked</h4>
+                  <p>Cost: {{ CONFIRM_PASSWORD_COST }} coins</p>
+                  <button 
+                    type="button"
+                    class="unlock-btn-large"
+                    :class="{ 'can-unlock': canUnlockConfirmPassword }"
+                    @click="unlockConfirmPassword"
+                    :disabled="!canUnlockConfirmPassword"
+                  >
+                    {{ canUnlockConfirmPassword ? '🔓 Unlock for ' + CONFIRM_PASSWORD_COST + ' coins' : '🔒 Need ' + CONFIRM_PASSWORD_COST + ' coins' }}
+                  </button>
+                </div>
+              </div>
+              <div v-if="unlockedFields.confirmPassword">
+                <label for="confirmPassword" class="form-label text-light">Confirm Password</label>
+                <BurningPasswordConfirm 
+                  v-model="confirmPassword" 
+                  :originalPassword="password"
+                  :disabled="!unlockedFields.confirmPassword"
+                />
+              </div>
+              <div v-else :class="{ 'locked-field': !unlockedFields.confirmPassword }">
+                <label class="form-label text-light">Confirm Password</label>
               </div>
             </div>
-            <div v-if="unlockedFields.confirmPassword">
-              <label for="confirmPassword" class="form-label text-light">Confirm Password</label>
-              <BurningPasswordConfirm 
-                v-model="confirmPassword" 
-                :originalPassword="password"
-                :disabled="!unlockedFields.confirmPassword"
-              />
+            <!-- <animatedImage src="../../src/assets/Explosion_Animated.png" :frameWidth="550" :frameHeight="550" :frames="10" :width="100" :height="100" ></animatedImage> -->
+            <!-- Terms and Conditions -->
+            <div class="form-check mb-4">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="terms" 
+                v-model="agreeTerms"
+                required
+              >
+              <label class="form-check-label text-light" for="terms">
+                I agree to the <a href="#" class="text-light-purple">Terms & Conditions</a>
+              </label>
             </div>
-            <div v-else :class="{ 'locked-field': !unlockedFields.confirmPassword }">
-              <label class="form-label text-light">Confirm Password</label>
-            </div>
-          </div>
-          <!-- <animatedImage src="../../src/assets/Explosion_Animated.png" :frameWidth="550" :frameHeight="550" :frames="10" :width="100" :height="100" ></animatedImage> -->
-          <!-- Terms and Conditions -->
-          <div class="form-check mb-4">
-            <input 
-              class="form-check-input" 
-              type="checkbox" 
-              id="terms" 
-              v-model="agreeTerms"
-              required
-            >
-            <label class="form-check-label text-light" for="terms">
-              I agree to the <a href="#" class="text-light-purple">Terms & Conditions</a>
-            </label>
-          </div>
 
-          <div class="mb-3">
-            <label for="confirmPassword" class="form-label text-light">Human Validation</label>
-            <input 
-              type="text" 
-              class="form-control form-control-lg bg-dark-blue border-purple text-white" 
-              style="color: white"
-              placeholder="Enter today's wordle answer"
-              required
-              v-model="wordleGuess"
-              @keyup="verifyCaptcha">
-              <div v-if="isWordleCorrect" class="text-success">You are human :)</div>
-              <div v-else class="text-danger">You are NOT human</div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label text-light">Human Validation</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg bg-dark-blue border-purple text-white" 
+                style="color: white"
+                placeholder="Enter today's wordle answer"
+                required
+                v-model="wordleGuess"
+                @keyup="verifyCaptcha">
+                <div v-if="isWordleCorrect" class="text-success">You are human :)</div>
+                <div v-else class="text-danger">You are NOT human</div>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-lg btn-purple w-100" >
+              Register Now
+            </button>
+            <div v-if="errMsg" class="text-danger text-center mt-3 p-3 rounded-3 border border-2 fw-bold fs-5 border-danger error-shake" style="background: var(--theme-dark-card-bg);">
+              ❌ ERROR: {{ errMsg }} ❌
+            </div>
+          </form>
+          
+          <div class="text-center mt-4">
+            <router-link to="/login" class="text-light-purple text-decoration-none">
+              Already have an account? Login here
+            </router-link>
           </div>
-          <!-- Submit Button -->
-          <button type="submit" class="btn btn-lg btn-purple w-100" >
-            Register Now
-          </button>
-          <div v-if="errMsg" class="text-danger text-center mt-3 p-3 rounded-3 border border-2 fw-bold fs-5 border-danger error-shake" style="background: var(--theme-dark-card-bg);">
-            ❌ ERROR: {{ errMsg }} ❌
-          </div>
-        </form>
-        
-        <div class="text-center mt-4">
-          <router-link to="/login" class="text-light-purple text-decoration-none">
-            Already have an account? Login here
-          </router-link>
+            </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Minigame with Coin Display -->
-    <div class="minigame-section mx-2">
-      <div class="coin-display">
-        <h3>💰 Your Coins: {{ totalCoins }}</h3>
-        <p class="text-light-purple">Play the game to earn coins and unlock fields!</p>
-      </div>
-      <Minigame :myBalance="totalCoins" @addCoins="addCoins"  />
-    </div>
+
+        
+        <!-- Minigame with Coin Display -->
+        <div class="col-12 col-md-6 col-xl-7">
+          <div class="minigame-section">
+            <div class="coin-display">
+              <h3>💰 Your Coins: {{ totalCoins }}</h3>
+              <p class="text-light-purple mb-0">Play the game to earn coins and unlock fields!</p>
+            </div>
+            <Minigame :myBalance="totalCoins" @addCoins="addCoins" />
+          </div>
+        </div>
     </div>
   </div>
 </template>
@@ -357,6 +361,8 @@ const verifyCaptcha = async () => {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
   background: radial-gradient(circle, var(--theme-purple-rgba-10) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
@@ -365,15 +371,11 @@ const verifyCaptcha = async () => {
 .register-wrapper {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
-  padding: 20px 0;
+
 }
 
 .register-card {
-
-  max-width: 900px;
-  background: linear-gradient(145deg, var(--theme-purple-rgba-30), var(--theme-blue-dark));
-  padding: 3px;
+  width: 100%;
   border-radius: 20px;
   box-shadow: 0 8px 32px var(--theme-purple-rgba-30);
 }
@@ -479,18 +481,23 @@ const verifyCaptcha = async () => {
   }
 }
 
+.minigame-section {
+  height: 100%;
+}
+
 .coin-display {
   background: var(--theme-dark-card-bg);
   border-radius: 10px;
   border: 2px solid var(--theme-purple);
-  padding: 3%;
-  margin-bottom: 2%;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .coin-display h3 {
   color: var(--theme-gold);
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   text-shadow: 0 0 10px var(--theme-gold-rgba-50);
+  margin-bottom: 0.5rem;
 }
 
 .error-shake {

@@ -111,10 +111,25 @@ export default {
         movePlayer(e) {
             if (!this.isPlaying) return
             const rect = e.currentTarget.getBoundingClientRect()
-            this.playerX = Math.max(0, Math.min(e.clientX - rect.left - this.playerWidth / 2, this.gameWidth - this.playerWidth))
+            const containerWidth = rect.width
+            const scaleX = this.gameWidth / containerWidth
+            const clientX = e.clientX - rect.left
+            this.playerX = Math.max(0, Math.min(clientX * scaleX - this.playerWidth / 2, this.gameWidth - this.playerWidth))
         },
         
-        shoot() {
+        movePlayerTouch(e) {
+            if (!this.isPlaying) return
+            e.preventDefault()
+            const touch = e.touches[0]
+            const rect = e.currentTarget.getBoundingClientRect()
+            const containerWidth = rect.width
+            const scaleX = this.gameWidth / containerWidth
+            const clientX = touch.clientX - rect.left
+            this.playerX = Math.max(0, Math.min(clientX * scaleX - this.playerWidth / 2, this.gameWidth - this.playerWidth))
+        },
+        
+        shoot(e) {
+            if (e) e.preventDefault()
             if (!this.isPlaying) return
             this.bullets.push({
                 x: this.playerX + this.playerWidth / 2 - 2.5,
@@ -232,19 +247,20 @@ export default {
 </script>
 
 <template>
-    <div class="game-wrapper d-flex flex-column align-items-center gap-3 p-4 rounded-3 border border-2">
-        <div class="game-header d-flex justify-content-between align-items-center w-100 gap-3" style="max-width: 400px;">
-            <div class="balance fs-4 fw-bold">💰 Coins: {{ myBalance }}</div>
-            <div v-if="isPlaying" class="difficulty fs-5 fw-bold text-light-purple pulse-glow">⚡ Level: {{ difficulty }}</div>
-            <button v-if="!isPlaying" @click="startGame" class="btn btn-success fw-bold">Start Game</button>
-            <button v-else @click="stopGame" class="btn btn-danger fw-bold">Stop Game</button>
+    <div class="game-wrapper d-flex flex-column align-items-center gap-3 p-3 p-md-4 rounded-3 border border-2">
+        <div class="game-header d-flex flex-wrap justify-content-between align-items-center w-100 gap-2 gap-md-3">
+            <div class="balance fs-5 fs-md-4 fw-bold">💰 Coins: {{ myBalance }}</div>
+            <div v-if="isPlaying" class="difficulty fs-6 fs-md-5 fw-bold text-light-purple pulse-glow">⚡ Level: {{ difficulty }}</div>
+            <button v-if="!isPlaying" @click="startGame" class="btn btn-success fw-bold btn-sm">Start Game</button>
+            <button v-else @click="stopGame" class="btn btn-danger fw-bold btn-sm">Stop Game</button>
         </div>
         
         <div 
             class="game-container position-relative rounded-3 border border-3"
-            :style="{ width: gameWidth + 'px', height: gameHeight + 'px' }"
             @mousemove="movePlayer"
+            @touchmove="movePlayerTouch"
             @click="shoot"
+            @touchstart="shoot"
         >
             <!-- Player -->
             <div 
@@ -307,12 +323,11 @@ export default {
                 <p class="text-light-purple fs-5 mb-4">Final Score: {{ myBalance }} coins</p>
                 <button @click="startGame" class="btn btn-primary fw-bold">Try Again</button>
             </div>
-            
             <!-- Instructions -->
-            <div v-if="!isPlaying" class="instructions position-absolute top-50 start-50 translate-middle text-center text-white rounded-3 border border-2 p-4">
-                <p class="text-light-purple mb-2">Click to shoot!</p>
-                <p class="text-light-purple mb-2">Press SPACE or click to fire</p>
-                <p class="text-light-purple mb-0">Move mouse to control</p>
+            <div v-if="!isPlaying" class="instructions position-absolute top-50 start-50 translate-middle text-center text-white rounded-3 border border-2 p-3 p-md-4">
+                <p class="text-light-purple mb-2 fs-6">Tap/Click to shoot!</p>
+                <p class="text-light-purple mb-2 fs-6 d-none d-md-block">Press SPACE to fire</p>
+                <p class="text-light-purple mb-0 fs-6">Move mouse/finger to control</p>
             </div>
         </div>
     </div>
@@ -345,6 +360,12 @@ export default {
     border-color: var(--theme-purple) !important;
     cursor: crosshair;
     overflow: hidden;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    min-height: 400px;
+    touch-action: none;
 }
 
 .player {
@@ -359,6 +380,15 @@ export default {
 .enemy-bullet {
     background: var(--gradient-enemy-bullet);
     box-shadow: 0 0 10px var(--theme-red-rgba-80);
+}
+
+.enemy-float {
+    animation: enemyFloat 1s ease-in-out infinite;
+}
+
+@keyframes enemyFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(5px); }
 }
 
 .game-over {
@@ -386,15 +416,6 @@ export default {
     }
 }
 
-.enemy-float {
-    animation: enemyFloat 1s ease-in-out infinite;
-}
-
-@keyframes enemyFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(5px); }
-}
-
 .instructions {
     background: var(--theme-dark-card-bg);
     border-color: var(--theme-purple-light) !important;
@@ -411,5 +432,41 @@ export default {
 .btn:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 15px var(--theme-purple-rgba-50);
+}
+
+@media (max-width: 576px) {
+    .game-wrapper {
+        padding: 1rem !important;
+    }
+    
+    .game-header {
+        font-size: 0.9rem;
+    }
+    
+    .balance, .difficulty {
+        font-size: 1rem !important;
+    }
+    
+    .game-container {
+        min-height: 350px;
+    }
+    
+    .instructions {
+        padding: 1rem !important;
+        max-width: 90%;
+    }
+    
+    .game-over {
+        max-width: 90%;
+        padding: 1.5rem !important;
+    }
+    
+    .game-over h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .game-over p {
+        font-size: 1rem !important;
+    }
 }
 </style>
