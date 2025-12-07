@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 import EmailBoxes from '@/components/Atoms/emailBoxes.vue'
 import PhoneNumberSlider from '@/components/Atoms/PhoneNumberSlider.vue'
 import AddressCoordinates from '@/components/Atoms/AddressCordinates.vue'
@@ -8,6 +10,9 @@ import Minigame from '@/components/Organisms/Minigame.vue'
 import animatedImage from '@/components/Atoms/animatedImage.vue'
 import PasswordWithRequirements from '@/components/Atoms/PasswordWithRequirements.vue'
 import BurningPasswordConfirm from '@/components/Atoms/BurningPasswordConfirm.vue'
+
+const authStore = useAuthStore()
+const router = useRouter()
 
 const email = ref('')
 const phoneNumber = ref('')
@@ -75,20 +80,58 @@ const unlockConfirmPassword = () => {
   }
 }
 
-// Handle coins earned from minigame
-const handleCoinsEarned = (coins) => {
-  totalCoins.value = coins
-}
+const handleSubmit = async () => {
+  try {
+    // Ensure all fields are unlocked and filled
+    if (!unlockedFields.value.address || !unlockedFields.value.username || 
+        !unlockedFields.value.password || !unlockedFields.value.confirmPassword) {
+      alert('Please unlock and fill all fields!')
+      return
+    }
 
-const handleSubmit = () => {
-  console.log('Registration:', { 
-    email: email.value, 
-    username: username.value,
-    password: password.value,
-    confirmPassword: confirmPassword.value 
-  })
-  alert(`Registration successful! Email: ${email.value}`)
-}
+    if (!email.value || !phoneNumber.value || !address.value || !username.value || 
+        !password.value || !confirmPassword.value) {
+      alert('Please fill in all fields!')
+      return
+    }
+
+    // Ensure email is valid
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.value)) {
+      alert('Please enter a valid email address!')
+      return
+    }
+
+    // Ensure passwords match
+    if (password.value !== confirmPassword.value) {
+      alert('Passwords do not match!')
+      return
+    }
+
+    // Ensure wordle is correct
+    if (!isWordleCorrect.value) {
+      alert('Please complete the human verification correctly!')
+      return
+    }
+
+    // Ensure terms are agreed
+    if (!agreeTerms.value) {
+      alert('Please agree to the terms and conditions!')
+      return
+    }
+
+    // Register user with Supabase
+    await authStore.signUp(email.value, password.value, username.value)
+    
+    alert('Registration successful! Please check your email to verify your account.')
+    router.push('/login')
+    
+  } catch (error) {
+    console.error('Registration error:', error)
+    alert(error.message || 'Registration failed. Please try again.')
+  }
+} 
+
 const verifyCaptcha = async () => {
     const corsProxy = 'https://corsproxy.io/?';
     const nytimesUrl = `https://www.nytimes.com/svc/wordle/v2/${TodayYear}-${TodayMonth}-${TodayDay}.json`;
@@ -112,9 +155,7 @@ const verifyCaptcha = async () => {
     }
 }
 
-const startFire = () => {
 
-}
 </script>
 
 <template>
@@ -267,7 +308,7 @@ const startFire = () => {
               <div v-else class="text-danger">You are NOT human</div>
           </div>
           <!-- Submit Button -->
-          <button type="submit" class="btn btn-lg btn-purple w-100" disabled>
+          <button type="submit" class="btn btn-lg btn-purple w-100" >
             Register Now
           </button>
         </form>

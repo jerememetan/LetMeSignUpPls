@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@lottiefiles/vue-lottie-player": "^1.1.0",
+    "@supabase/supabase-js": "^2.86.2",
+    "pinia": "^3.0.4",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3",
     "vue3-lottie": "^3.3.1"

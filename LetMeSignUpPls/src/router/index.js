@@ -1,7 +1,8 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import HomePage from '@/views/HomePage.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const routes = [
     {
@@ -17,17 +18,36 @@ const routes = [
     {
         path: '/home',
         name: 'home',
-        component : HomePage
-        // requires user to be logged in
+        component : HomePage,
+        meta: { requiresAuth: true } 
+        
+    },
+    {
+        path: '/',
+        redirect: '/login'
     }
 
 ]
-const router = createRouter(
-    {
+
+const router = createRouter({
     history: createWebHistory(),
     routes,
+})
+
+router.beforeEach(async (to, from, next) => {
+	const authStore = useAuthStore();
+
+    if(!authStore.initialised){
+        await authStore.initAuth();
     }
 
-)
+	// Redirect to login if destination page requires auth and no session is found
+	if(to.meta.requiresAuth && !authStore.isAuthenticated){
+		next('/login');
+	}
+	else{
+		next();
+	}
+});
 
 export default router;
