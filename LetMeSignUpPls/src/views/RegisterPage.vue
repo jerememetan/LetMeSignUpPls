@@ -14,6 +14,7 @@ import BurningPasswordConfirm from '@/components/Atoms/BurningPasswordConfirm.vu
 const authStore = useAuthStore()
 const router = useRouter()
 
+
 const email = ref('')
 const phoneNumber = ref('')
 const address = ref('')
@@ -23,7 +24,7 @@ const confirmPassword = ref('')
 const agreeTerms = ref(false)
 const wordleGuess = ref()
 const isWordleCorrect = ref(false)
-
+const errMsg = ref('');
 // Coin system
 const totalCoins = ref(0)
 const ADDRESS_COST = 10
@@ -51,6 +52,10 @@ const TodayDay = Today.getDate().toLocaleString('en-US',{minimumIntegerDigits : 
 const TodayMonth = Today.getMonth() + 1;
 const TodayYear = Today.getFullYear();
 
+
+const addCoins = (num) =>{
+  totalCoins.value += num;
+}
 // Unlock functions
 const unlockAddress = () => {
   if (canUnlockAddress.value) {
@@ -85,41 +90,43 @@ const handleSubmit = async () => {
     // Ensure all fields are unlocked and filled
     if (!unlockedFields.value.address || !unlockedFields.value.username || 
         !unlockedFields.value.password || !unlockedFields.value.confirmPassword) {
-      alert('Please unlock and fill all fields!')
+      errMsg.value ='Please unlock and fill all fields!'
       return
     }
 
     if (!email.value || !phoneNumber.value || !address.value || !username.value || 
         !password.value || !confirmPassword.value) {
-      alert('Please fill in all fields!')
+        errMsg.value ='Please fill in all fields!'
+
       return
     }
 
     // Ensure email is valid
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email.value)) {
-      alert('Please enter a valid email address!')
+      errMsg.value ='Please enter a valid email address!'
       return
     }
 
     // Ensure passwords match
     if (password.value !== confirmPassword.value) {
       alert('Passwords do not match!')
+      errMsg.value ='Passwords do not match!'
       return
     }
 
     // Ensure wordle is correct
     if (!isWordleCorrect.value) {
-      alert('Please complete the human verification correctly!')
+      errMsg.value ='Please complete the human verification correctly!'
       return
     }
 
     // Ensure terms are agreed
     if (!agreeTerms.value) {
-      alert('Please agree to the terms and conditions!')
+      errMsg.value = 'Please agree to the terms and conditions!'
       return
     }
-
+    console.log(`Email: ${email.value}, Password: ${password.value}, Username: ${username.value}` )
     // Register user with Supabase
     await authStore.signUp(email.value, password.value, username.value)
     
@@ -281,7 +288,7 @@ const verifyCaptcha = async () => {
           </div>
           <!-- <animatedImage src="../../src/assets/Explosion_Animated.png" :frameWidth="550" :frameHeight="550" :frames="10" :width="100" :height="100" ></animatedImage> -->
           <!-- Terms and Conditions -->
-          <div class="form-check mb-4" @click="startFire">
+          <div class="form-check mb-4">
             <input 
               class="form-check-input" 
               type="checkbox" 
@@ -311,6 +318,9 @@ const verifyCaptcha = async () => {
           <button type="submit" class="btn btn-lg btn-purple w-100" >
             Register Now
           </button>
+          <div v-if="errMsg" class="text-danger text-center mt-3 p-3 rounded-3 border border-2 fw-bold fs-5 border-danger error-shake" style="background: var(--theme-dark-card-bg);">
+            ❌ ERROR: {{ errMsg }} ❌
+          </div>
         </form>
         
         <div class="text-center mt-4">
@@ -327,7 +337,7 @@ const verifyCaptcha = async () => {
         <h3>💰 Your Coins: {{ totalCoins }}</h3>
         <p class="text-light-purple">Play the game to earn coins and unlock fields!</p>
       </div>
-      <Minigame @coins-updated="handleCoinsEarned" />
+      <Minigame :myBalance="totalCoins" @addCoins="addCoins"  />
     </div>
     </div>
   </div>
@@ -481,6 +491,27 @@ const verifyCaptcha = async () => {
   color: var(--theme-gold);
   font-size: 1.8rem;
   text-shadow: 0 0 10px var(--theme-gold-rgba-50);
+}
+
+.error-shake {
+  animation: shake 0.5s ease-in-out, pulse-error 2s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse-error {
+  0%, 100% { 
+    box-shadow: 0 0 10px var(--theme-red-rgba-50);
+    text-shadow: 0 0 5px var(--theme-red-rgba-80);
+  }
+  50% { 
+    box-shadow: 0 0 20px var(--theme-red-rgba-80);
+    text-shadow: 0 0 10px var(--theme-red);
+  }
 }
 
 @media (max-width: 576px) {

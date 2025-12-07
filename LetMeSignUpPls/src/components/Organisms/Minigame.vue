@@ -1,9 +1,10 @@
 <script>
 export default {
-    emits: ['coins-updated'],
+    emits: ['addCoins'],
+    props : ['myBalance'],
     data() {
         return {
-            myBalance: 0,
+            
             playerX: 200,
             bullets: [],
             enemies: [],
@@ -78,7 +79,7 @@ export default {
             }
             this.enemyShootInterval = setInterval(() => {
                 this.enemyShoot()
-            }, 2000)
+            }, 2500)
         },
         
         enemyShoot() {
@@ -184,8 +185,8 @@ export default {
                         // Hit!
                         this.bullets.splice(bulletIndex, 1)
                         this.enemies.splice(enemyIndex, 1)
-                        this.myBalance += 10
-                        this.$emit('coins-updated', this.myBalance)
+                        this.$emit('addCoins', 10)
+                        // this.$emit('coins-updated', this.myBalance)
                     }
                 })
             })

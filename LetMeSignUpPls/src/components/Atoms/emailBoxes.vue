@@ -52,7 +52,7 @@ onUnmounted(() => {
         class="form-control bg-dark-blue border-purple text-white email-box" 
         v-model="emailBoxes[index]"
         :placeholder="`Box ${index + 1}`"
-        maxlength="99"
+        maxlength="5"
         @input="updateEmail"
       >
     </div>

@@ -35,29 +35,21 @@ export const useAuthStore = defineStore('auth', {
         },
         async signUp(email, password, username) {
             // Sign up with email and password
+            // Username is stored in metadata and automatically inserted into Users table via database trigger
             const { data, error } = await supabase.auth.signUp({ 
                 email, 
                 password,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/home`
+                    emailRedirectTo: `${window.location.origin}/home`,
+                    data: {
+                        username: username
+                    }
                 }
             })
             if (error) throw error
             
-            // Store username in a separate users table
-            if (data.user) {
-                const { error: profileError } = await supabase
-                    .from('users')
-                    .insert({ 
-                        id: data.user.id, 
-                        email: email,
-                        username: username 
-                    })
-                
-                if (profileError) throw profileError
-            }
-            
             this.user = data.user
+            return data
         },
         async signOut() {
             const { error } = await supabase.auth.signOut()
