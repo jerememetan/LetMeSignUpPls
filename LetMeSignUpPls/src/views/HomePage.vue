@@ -17,16 +17,7 @@ const copyShareText = () => {
     const text = `🏆 I JUST SURVIVED "LetMeSignUpPls" 🏆
 
 The world's most BRUTAL registration form couldn't stop me!
-
-✓ Scattered email boxes? SOLVED.
-✓ Phone number slider? MASTERED.
-✓ Space Invaders boss fight? DEFEATED.
-✓ 15 password requirements? CONQUERED.
-✓ Moving login button? CAUGHT.
-✓ Burning password fields? ENDURED.
-
 I am now part of the ELITE 1% who made it through!
-
 Think you have what it takes? Prove it:
 [Your URL here]`
     
