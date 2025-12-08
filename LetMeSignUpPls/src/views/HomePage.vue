@@ -46,7 +46,6 @@ const downloadCertificate = async () => {
 
 const copyShareText = () => {
     const text = `🏆 I JUST SURVIVED "LetMeSignUpPls" 🏆
-
 The world's most BRUTAL registration form couldn't stop me!
 I am now part of the ELITE 1% who made it through!
 Think you have what it takes? Prove it:
