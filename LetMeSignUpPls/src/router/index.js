@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/views/LoginPage.vue';
 import RegisterPage from '@/views/RegisterPage.vue';
 import HomePage from '@/views/HomePage.vue';
+import DeletePage from '@/views/DeletePage.vue';
 import { useAuthStore } from '@/stores/auth';
 
 const routes = [
@@ -25,6 +26,12 @@ const routes = [
     {
         path: '/',
         redirect: '/login'
+    },
+    {
+        path: '/delete',
+        name: 'delete',
+        component: DeletePage,
+        meta : {requiresAuth: true}
     }
 
 ]

@@ -1,8 +1,14 @@
 <script setup>
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 import FakeLoginButton from '@/components/Atoms/FakeLoginButton.vue'
 import PayWall from '@/components/Organisms/PayWall.vue'
 import CreditCardModal from '@/components/Molecules/CreditCardModal.vue'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
 const username = ref('')
 const password = ref('')
 const rememberMe = ref(false)
@@ -74,20 +80,31 @@ const moveButton = (event) => {
   
   const randomX = GenerateNumber(20, Math.max(20, maxX)); // min 20px from edge
   const randomY = GenerateNumber(20, Math.max(20, maxY));
-  console.log(randomX);
-  console.log(randomY);
+
   
   buttonPosition.value = { x: randomX, y: randomY }
 }
 const GenerateNumber = (min,max) =>{
     return Math.floor(Math.random() * (max - min)) + min;
   }
-const handleLogin = () => {
-  console.log('Login:', { username: username.value, password: password.value, rememberMe: rememberMe.value })
+const handleLogin = async () => {
+  try {
+    if (!username.value || !password.value){
+      alert("Please fill in all fields")
+      return
+    }
+    
+    await authStore.signIn(username.value, password.value)
+    router.push('/home')
+  }
+  catch(error){
+    alert(error.message || "Login information is not correct!")
+  }
 }
 </script>
 
 <template>
+  
 <div class="row g-0">
     
     <CreditCardModal 
@@ -95,6 +112,7 @@ const handleLogin = () => {
       @close="showCreditCardModal = false"
       @success="handlePaymentSuccess"
   />
+
     <!-- login portion -->
   <div class="login-container min-vh-100 d-flex align-items-center justify-content-center p-3 col-12 col-lg-7">
     <!-- Centered Card with Gradient Border -->
@@ -165,9 +183,7 @@ const handleLogin = () => {
         v-show="clickCount <= 10"
         :speed="5"
       />
-
-    </div>
-            <button 
+          <button 
         v-show="clickCount > 10" 
         class="btn btn-danger moving-button" 
         @click="moveButton"
@@ -180,13 +196,22 @@ const handleLogin = () => {
       >
         Log in? ({{ loginClickCount }}/10)
       </button>
+    </div>
+
   </div>
 
+  <span class="invisible">
+    <router-link to="/register" class="text-danger text-decoration-none fw-bold">Register</router-link>
+  </span>
 </div>
 </template>
 
 <style scoped>
 /* Base Styles */
+.invisible{
+  width: 20%;
+  height: 10%;
+}
 .login-container {
 background-color: var(--theme-blue-dark);
   position: relative;

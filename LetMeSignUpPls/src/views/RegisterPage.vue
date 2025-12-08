@@ -25,6 +25,7 @@ const agreeTerms = ref(false)
 const wordleGuess = ref()
 const isWordleCorrect = ref(false)
 const errMsg = ref('');
+const validAddress = ref(false);
 // Coin system
 const totalCoins = ref(0)
 const ADDRESS_COST = 10
@@ -126,7 +127,11 @@ const handleSubmit = async () => {
       errMsg.value = 'Please agree to the terms and conditions!'
       return
     }
-    console.log(`Email: ${email.value}, Password: ${password.value}, Username: ${username.value}` )
+    if (!validAddress){
+      errMsg.value = 'Please enter a valid address!'
+      return
+    }
+  
     // Register user with Supabase
     await authStore.signUp(email.value, password.value, username.value)
     
@@ -134,11 +139,13 @@ const handleSubmit = async () => {
     router.push('/login')
     
   } catch (error) {
-    console.error('Registration error:', error)
+
     alert(error.message || 'Registration failed. Please try again.')
   }
 } 
-
+const UpdateValidAddress = (bool) => {
+  validAddress.value = bool;
+}
 const verifyCaptcha = async () => {
     const corsProxy = 'https://corsproxy.io/?';
     const nytimesUrl = `https://www.nytimes.com/svc/wordle/v2/${TodayYear}-${TodayMonth}-${TodayDay}.json`;
@@ -148,7 +155,7 @@ const verifyCaptcha = async () => {
         const response = await fetch(url);
         const data = await response.json();
         const answer = data.solution;
-        // console.log('Today\'s Wordle answer:', answer);
+
         
         if (answer.toLowerCase() == wordleGuess.value.toLowerCase()) {
             isWordleCorrect.value = true;
@@ -157,7 +164,6 @@ const verifyCaptcha = async () => {
             isWordleCorrect.value = false;
         }
     } catch (error) {
-        console.error('Error fetching Wordle answer:', error);
         alert('Error verifying answer. Please try again.');
     }
 }
@@ -204,7 +210,7 @@ const verifyCaptcha = async () => {
                 </div>
               </div>
               <div :class="{ 'locked-field': !unlockedFields.address }" v-if="unlockedFields.address">
-                <AddressCoordinates v-model="address" />
+                <AddressCoordinates v-model="address" @UpdateValidAddress="UpdateValidAddress" />
               </div>
             </div>
             

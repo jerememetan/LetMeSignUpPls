@@ -1,17 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
+import axios from 'axios'
 
 const props = defineProps({
   modelValue: String
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'UpdateValidAddress'])
 
 const latitude = ref('')
 const longitude = ref('')
 const isMapVisible = ref(false)
 const mapZoom = ref(10)
 const zoomTimer = ref(null)
+const locationInfo = ref(null)
+let debounceTimer = null
 
 // Random zoom chaos
 const startZoomChaos = () => {
@@ -51,7 +54,35 @@ const updateAddress = () => {
   if (latitude.value && longitude.value) {
     const coordString = `${latitude.value}, ${longitude.value}`
     emit('update:modelValue', coordString)
+    
+    // Debounce API call - wait 1 second after user stops typing
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
+    
+    debounceTimer = setTimeout(() => {
+      updateLocation()
+    }, 1000)
   }
+}
+
+const updateLocation = async () => {
+    const openstreetmapURL = `https://nominatim.openstreetmap.org/reverse`;
+    const params = {format : 'json', lat: latitude.value, lon: longitude.value}
+    locationInfo.value = 'Loading...';
+    
+    // Use CORS proxy to bypass CORS restrictions
+    const corsProxy = 'https://api.allorigins.win/raw?url=';
+    const fullURL = corsProxy + encodeURIComponent(openstreetmapURL + '?' + new URLSearchParams(params));
+    
+    try{
+      const response = await axios.get(fullURL);
+      locationInfo.value = response.data.display_name ;
+
+    } catch(error){
+      locationInfo.value = 'Invalid Location!';
+    }
+
 }
 
 // Validate coordinates
@@ -66,7 +97,15 @@ const isValidLong = computed(() => {
 })
 
 const coordinatesComplete = computed(() => {
-  return isValidLat.value && isValidLong.value
+  if (isValidLat.value && isValidLong.value && locationInfo.value != 'Invalid Location!' 
+  && locationInfo.value != null && locationInfo.value != 'Loading...'){
+    emit('UpdateValidAddress', true);
+    return true;
+  }
+  else{
+    emit('UpdateValidAddress', false);
+    return false;
+  }
 })
 
 // Cleanup on unmount
@@ -116,6 +155,10 @@ onUnmounted(() => {
         <span v-if="longitude && !isValidLong" class="error-text">Invalid longitude!</span>
       </div>
     </div>
+    <div class="pb-3">
+      <label class="coord-label d-flex justify-content-center">Your Selected Location</label>
+      <h4 type="text" disabled class="form-control form-control-lg bg-dark-blue border-purple text-white">{{ locationInfo }}</h4>
+    </div>
     
     <div class="help-section">
       <button 
@@ -130,7 +173,6 @@ onUnmounted(() => {
         ✅ Coordinates Valid!
       </div>
     </div>
-    
     <!-- Chaotic Map -->
     <div v-if="isMapVisible" class="map-container">
       <div class="map-overlay">

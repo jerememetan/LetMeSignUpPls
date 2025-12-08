@@ -16,22 +16,34 @@ export const useAuthStore = defineStore('auth', {
             this.initialised = true
         },
         async signIn(username, password) {
-            // First, look up the email associated with this username
-            const { data: userData, error: lookupError } = await supabase
-                .from('Users')
-                .select('email')
-                .eq('username', username)
-                .single()
-            
-            if (lookupError) throw new Error('Invalid username or password')
-            
-            // Then sign in with the email
-            const { data, error } = await supabase.auth.signInWithPassword({ 
-                email: userData.email, 
-                password 
-            })
-            if (error) throw error
-            this.user = data.user
+            try {
+                // First, look up the email associated with this username
+                const { data: userData, error: lookupError } = await supabase
+                    .from('Users')
+                    .select('email')
+                    .eq('username', username)
+                    .maybeSingle()
+                
+                if (lookupError) {
+                    throw new Error('Database query failed')
+                }
+                
+                if (!userData) {
+                    throw new Error('Invalid username or password')
+                }
+                
+                // Then sign in with the email
+                const { data, error } = await supabase.auth.signInWithPassword({ 
+                    email: userData.email, 
+                    password 
+                })
+                
+                if (error) throw new Error('Invalid username or password')
+                
+                this.user = data.user
+            } catch (error) {
+                throw error
+            }
         },
         async signUp(email, password, username) {
             // Sign up with email and password
@@ -40,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
                 email, 
                 password,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/home`,
+                    emailRedirectTo: `${window.location.origin}/login`,
                     data: {
                         username: username
                     }
