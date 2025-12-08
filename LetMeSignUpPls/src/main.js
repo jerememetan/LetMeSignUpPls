@@ -1,5 +1,5 @@
 import './assets/main.css'
-
+import { Html2CanvasPlugin } from 'vue3-html2canvas';
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
@@ -10,4 +10,5 @@ const pinia = createPinia();
 app.use(router); // Make the router available to the entire app
 app.component('Vue3Lottie', Vue3Lottie); // Register Lottie globally
 app.use(pinia);
+app.use(Html2CanvasPlugin);
 app.mount('#app');

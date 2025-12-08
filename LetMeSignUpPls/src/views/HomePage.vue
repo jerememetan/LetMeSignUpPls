@@ -3,14 +3,45 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { Vue3Lottie } from 'vue3-lottie'
 import Certificate from '@/components/Molecules/Certificate.vue'
+import { Html2CanvasPlugin, useHtml2Canvas } from 'vue3-html2canvas'
 const authStore = useAuthStore()
 const username = computed(() => authStore.user?.user_metadata?.username || 'Champion')
-
-const downloadCertificate = () => {
-    // Create a temporary link to download/share
+const html2canvas = useHtml2Canvas();
+const downloadCertificate = async () => {
+    // Get the certificate element
     const certificateElement = document.querySelector('.certificate-card')
-    // You could integrate html2canvas here for actual image generation
-    alert('Certificate download feature! (Would generate PNG with html2canvas)')
+    
+    if (!certificateElement) {
+        alert('Certificate not found!')
+        return
+    }
+    
+    try {
+        // Generate canvas from certificate element
+        const canvas = await html2canvas(certificateElement, {
+            useCORS: true,
+            scale: 2, // Higher quality
+            backgroundColor: '#1a1a2e',
+            logging: false
+        });
+        
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+            // Create download link
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.download = `LetMeSignUpPls-Certificate-${username.value}.png`
+            link.href = url
+            link.click()
+            
+            // Cleanup
+            URL.revokeObjectURL(url)
+        }, 'image/png')
+        
+    } catch (error) {
+        console.error('Error generating certificate:', error)
+        alert('Failed to generate certificate image. Please try again.')
+    }
 }
 
 const copyShareText = () => {
