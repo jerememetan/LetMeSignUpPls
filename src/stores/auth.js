@@ -52,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
                 email, 
                 password,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/login`,
+                    emailRedirectTo: `${window.location.origin}/LetMeSignUpPls/login`,
                     data: {
                         username: username
                     }
