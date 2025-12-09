@@ -28,10 +28,10 @@ const errMsg = ref('');
 const validAddress = ref(false);
 // Coin system
 const totalCoins = ref(0)
-const ADDRESS_COST = 10
-const USERNAME_COST = 10
-const PASSWORD_COST = 10
-const CONFIRM_PASSWORD_COST = 10
+const ADDRESS_COST = 50
+const USERNAME_COST = 100
+const PASSWORD_COST = 500
+const CONFIRM_PASSWORD_COST = 10000
 
 // Track unlocked fields
 const unlockedFields = ref({
