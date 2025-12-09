@@ -49,7 +49,7 @@ const copyShareText = () => {
 The world's most BRUTAL registration form couldn't stop me!
 I am now part of the ELITE 1% who made it through!
 Think you have what it takes? Prove it:
-[Your URL here]`
+https://jerememetan.github.io/LetMeSignUpPls/`
     
     navigator.clipboard.writeText(text)
     alert('Epic share text copied to clipboard! 🎉 Paste it anywhere and let the world know of your achievement!')
