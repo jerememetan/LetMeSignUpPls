@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import EmailBoxes from '@/components/Atoms/emailBoxes.vue'
@@ -13,6 +13,45 @@ import BurningPasswordConfirm from '@/components/Atoms/BurningPasswordConfirm.vu
 
 const authStore = useAuthStore()
 const router = useRouter()
+
+// Background music
+const bgMusic = ref(null)
+const isMusicPlaying = ref(false)
+
+onMounted(() => {
+  // Create audio element for background music
+  bgMusic.value = new Audio('background_music.mp3') // You'll need to add your music file
+  bgMusic.value.loop = true
+  bgMusic.value.volume = 0.1 // 30% volume
+  
+  // Auto-play might be blocked by browser, so we offer a button
+  bgMusic.value.play().catch(() => {
+    // Auto-play blocked, user needs to interact first
+    isMusicPlaying.value = false
+  }).then(() => {
+    isMusicPlaying.value = true
+  })
+})
+
+onUnmounted(() => {
+  // Stop music when leaving page
+  if (bgMusic.value) {
+    bgMusic.value.pause()
+    bgMusic.value = null
+  }
+})
+
+const toggleMusic = () => {
+  if (!bgMusic.value) return
+  
+  if (isMusicPlaying.value) {
+    bgMusic.value.pause()
+    isMusicPlaying.value = false
+  } else {
+    bgMusic.value.play()
+    isMusicPlaying.value = true
+  }
+}
 
 
 const email = ref('')
@@ -173,6 +212,15 @@ const verifyCaptcha = async () => {
 
 <template>
   <div class="register-container " >
+    <!-- Music Control Button -->
+    <button 
+      class="music-toggle-btn opacity-25"
+      @click="toggleMusic"
+      :class="{ 'playing': isMusicPlaying }"
+    >
+      {{ isMusicPlaying ? '🔊' : '🔇' }}
+    </button>
+
     <div class="register-wrapper p-3 row ">
       <div class="col-12 col-md-6 col-xl-5">
           <div class="register-card" >
@@ -524,6 +572,42 @@ const verifyCaptcha = async () => {
   50% { 
     box-shadow: 0 0 20px var(--theme-red-rgba-80);
     text-shadow: 0 0 10px var(--theme-red);
+  }
+}
+
+.music-toggle-btn {
+  position: fixed;
+  bottom: 2px;
+  right: 2px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid var(--theme-purple);
+  background: var(--theme-dark-card-bg);
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--theme-purple-rgba-30);
+}
+
+.music-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px var(--theme-purple-rgba-50);
+}
+
+.music-toggle-btn.playing {
+  animation: music-pulse 1.5s ease-in-out infinite;
+  border-color: var(--theme-gold);
+}
+
+@keyframes music-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px var(--theme-gold-rgba-50);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--theme-gold-rgba-80);
   }
 }
 
