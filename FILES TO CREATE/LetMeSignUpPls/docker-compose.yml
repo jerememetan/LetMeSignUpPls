@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./LetMeSignUpPls
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # Uncomment and configure below if you add a backend service
+  # backend:
+  #   build: ./backend
+  #   ports:
+  #     - "5000:5000"
+  #   restart: unless-stopped
